@@ -157,6 +157,33 @@ VALUES (15, 'bit', 225, 7);
 INSERT INTO track 
 VALUES (16, 'big', 180, 7);
 
+INSERT INTO track 
+VALUES (17, 'bemy self', 230, 1);
+
+INSERT INTO track 
+VALUES (18, 'myself by', 240, 1);
+
+INSERT INTO track 
+VALUES (19, 'by myself by', 250, 2);
+
+INSERT INTO track 
+VALUES (20, 'beemy', 260, 4);
+
+INSERT INTO track 
+VALUES (21, 'myself', 260, 4);
+
+INSERT INTO track 
+VALUES (22, 'by myself', 260, 5);
+
+INSERT INTO track 
+VALUES (23, 'premyne', 260, 7);
+
+INSERT INTO track 
+VALUES (24, 'My', 270, 7);
+
+INSERT INTO track 
+VALUES (25, 'You my', 215, 6);
+
 INSERT INTO collectiontrack 
 VALUES (1, 1);
 

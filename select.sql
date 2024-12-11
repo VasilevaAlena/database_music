@@ -4,7 +4,7 @@ WHERE duration = (SELECT MAX(duration) FROM track);
 
 /* Название треков, продолжительность которых не менее 3,5 минут.*/
 SELECT song FROM track
-WHERE duration > 210;
+WHERE duration >= 210;
 
 /* Названия сборников, вышедших в период с 2018 по 2020 год включительно.*/
 SELECT title FROM collections
@@ -16,7 +16,10 @@ WHERE executor NOT LIKE '% %';
 
 /* Название треков, которые содержат слово «мой» или «my».*/
 SELECT song FROM track
-WHERE song LIKE '%my%';
+WHERE song ILIKE 'my %' 
+	OR song ILIKE '% my'
+	OR song ILIKE '% my %'
+	OR song ILIKE 'my';
 
 /* Количество исполнителей в каждом жанре.*/
 SELECT g.genre, COUNT(singer_id) singer_count FROM singergenre s
@@ -25,11 +28,9 @@ GROUP BY g.genre
 ORDER BY singer_count DESC;
 
 /* Количество треков, вошедших в альбомы 2019–2020 годов.*/
-SELECT a.title, COUNT(song) song_count FROM track t
+SELECT COUNT(albom_id) song_count FROM track t
 JOIN albom a ON t.albom_id = a.id
-WHERE release BETWEEN 2019 AND 2020
-GROUP BY a.title
-ORDER BY song_count DESC;
+WHERE release BETWEEN 2019 AND 2020;
 
 /* Средняя продолжительность треков по каждому альбому.*/
 SELECT a.title, AVG(duration) FROM track t
@@ -39,19 +40,15 @@ ORDER BY AVG(duration) DESC;
 
 /* Все исполнители, которые не выпустили альбомы в 2020 году. */
 SELECT s.executor FROM singer s
-JOIN albomsinger a2 ON s.id = a2.singer_id 
-JOIN albom a ON a.id = a2.albom_id
-WHERE a.release != 2020
-GROUP BY s.executor
-HAVING s.executor NOT LIKE (SELECT s.executor FROM singer s
-	JOIN albomsinger a2 ON s.id = a2.singer_id 
+WHERE s.id NOT IN (
+	SELECT a2.singer_id FROM albomsinger a2
 	JOIN albom a ON a.id = a2.albom_id
-	WHERE a.release = 2020);
-
+	WHERE a.release = 2020)
+    
 /* Названия сборников, в которых присутствует конкретный исполнитель (выберите его сами).*/
 SELECT c.title FROM collections c
 RIGHT JOIN collectiontrack ct ON c.id = ct.collection_id 
-FULL JOIN track t ON t.id = ct.track_id 
+JOIN track t ON t.id = ct.track_id 
 JOIN albom a ON a.id = t.albom_id
 JOIN albomsinger a2 ON a2.albom_id = a.id
 JOIN singer s ON s.id = a2.singer_id
@@ -62,7 +59,8 @@ GROUP BY c.title;
 SELECT a.title FROM albom a 
 RIGHT JOIN albomsinger a2 ON a2.albom_id = a.id
 JOIN singer s ON s.id = a2.singer_id
-JOIN singergenre sg ON sg.singer_id = s.id
+JOIN (SELECT singer_id FROM singergenre 
+	GROUP BY singer_id) sg ON sg.singer_id = s.id
 GROUP BY a.title
 HAVING COUNT(a.title) > 1;
 
